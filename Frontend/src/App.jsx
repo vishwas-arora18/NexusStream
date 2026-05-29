@@ -1,22 +1,22 @@
 import { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LandingPage from './pages/Landing.jsx'; // Maine extension lagaya hai taaki panga na ho
-import Authentication from './pages/Authentication.jsx'; // Capital 'A' ke sath exact file link kari hai
-// import './App.css'
+import LandingPage from './pages/Landing.jsx'; 
+import Authentication from './pages/Authentication.jsx'; 
+import { AuthProvider } from './context/AuthContext.jsx'; 
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <div className="App">
       <Router>
-        <Routes>
-          <Route path='/' element={<LandingPage/>}></Route>
-          <Route path="/auth" element={<Authentication/>}></Route>
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path='/' element={<LandingPage />} />
+            <Route path="/auth" element={<Authentication />} />
+          </Routes>
+        </AuthProvider>
       </Router>        
     </div>
   )
 }
 
-export default App
+export default App;
