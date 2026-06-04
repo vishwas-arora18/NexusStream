@@ -135,7 +135,6 @@ export default function Authentication() {
                                 onChange={(e) => setPassword(e.target.value)}
                             />
                             <p style={{color: "red"}}>{error}</p>
-                            {/* ✔️ FIX: onClick par handleAuth function attach kar diya */}
                             <Button
                                 type="button"
                                 fullWidth
