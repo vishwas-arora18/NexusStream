@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react' 
-import "../styles/VideoComponent.css"
+import styles from "../styles/VideoComponent.module.css";
 import { TextField } from '@mui/material';
 import Button from '@mui/material/Button';
 import {io} from "socket.io-client";
@@ -87,7 +87,10 @@ export default function VideoMeetComponent() {
         localVideoRef.current.srcObject = stream;
         for (let id in connections){
             if(id === socketIdRef.current) continue;
-            connections[id].addStream(window.localStream)
+            if (window.localStream && window.localStream instanceof MediaStream) {
+                connections[id].addStream(window.localStream)
+            }
+            
             connections[id].createOffer().then((description)=> {
                 connections[id].setLocalDescription(description)
                 .then(()=>{
@@ -108,7 +111,10 @@ export default function VideoMeetComponent() {
             
             new MediaStream();
             for(let id in connections){ 
-                connections[id].addStream(window.localStream)
+                if (window.localStream && window.localStream instanceof MediaStream) {
+                    connections[id].addStream(window.localStream)
+                }
+
                 connections[id].createOffer().then((description)=> {
                     connections[id].setLocalDescription(description)
                     .then(()=>{
@@ -218,7 +224,7 @@ export default function VideoMeetComponent() {
                             });
                         }
                     };
-                    if(window.localStorage !== undefined && window.localStream !== null){
+                    if(window.localStorage !== undefined && window.localStream !== null && window.localStream instanceof MediaStream){
                         connections[socketListId].addStream(window.localStream);
                     }else{
                         let blackSilence = (...args) => new MediaStream([black(...args), silence()])
@@ -230,7 +236,9 @@ export default function VideoMeetComponent() {
                     for(let id2 in connections){
                         if(id2 === socketIdRef.current) continue
                         try{
-                            connections[id2].addStream(window.localStream)
+                            if (window.localStream && window.localStream instanceof MediaStream) {
+                                connections[id2].addStream(window.localStream)
+                            }
                         }catch(e){}
                         connections[id2].createOffer().then((description)=>{
                             connections[id2].setLocalDescription(description)
@@ -268,18 +276,25 @@ export default function VideoMeetComponent() {
                     </div>
                 </div>
             ) : (
-                <>
-                    <video ref={localVideoRef} autoPlay muted></video>
-                    {videos.map((video)=>(
+                <div className={styles.meetVideoContainer}>
+                    <video className={styles.meetUserVideo} ref={localVideoRef} autoPlay muted></video>
+                    {videos.map((video) => (
                         <div key={video.socketId}>
+                            <h2>{video.socketId}</h2>
                             <video 
-                                ref={(ref) => { if(ref) ref.srcObject = video.stream; }} 
-                                autoPlay 
+                                data-socket={video.socketId}
+                                ref={ref => {
+                                    if (ref && video.stream) {
+                                        ref.srcObject = video.stream;
+                                    }
+                                }}
+                                autoPlay
                                 playsInline
                             />
                         </div>
                     ))}
-                </>
+    
+                </div>
             )}
         </div>
     )
